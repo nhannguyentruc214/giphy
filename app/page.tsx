@@ -10,11 +10,13 @@ import Image from "next/image";
 import loadingGif from './ZKZg.gif'
 import Scroll from "./components/scroll";
 import ScrollToTop from "./components/scrollToTop";
+
 const giphyFetch = new GiphyFetch("sXpGFDGZs0Dv1mmNFvYaGUvYwKX0PWIh")
 
 
 function GifDemo({ id }: any) {
   const [gif, setGif] = useState<any>(null);
+
   async function fetchData() {
     return await giphyFetch.gif(id);
   }
@@ -38,24 +40,29 @@ export default function Home() {
   const [loading, setLoading] = useState<any>(true);
   const [hovered, setHovered] = useState<any>(false);
   const [limit, setLimit] = useState<any>(30);
-  const [searchLimit, setSearchLimit] = useState<any>(30);
   const [onScroll, setOnScroll] = useState<any>(false);
+  const [scrollLimit, setScrollLimit] = useState<any>(0);
 
   const fetchGifsSearch = (offset: number) =>
-    giphyFetch.search(searchGoal, { offset, sort: 'relevant', lang: 'es', limit: searchLimit, type: 'gifs' });
+    giphyFetch.search(searchGoal, { offset, sort: 'relevant', lang: 'es', limit: limit, type: 'gifs' });
 
   const fetchGifsTrending = (offset: number) =>
     giphyFetch.trending({ offset, limit: limit });
 
+  useEffect(() => {
+    setScrollLimit(0);
+    setLimit(30);
+  }, [searchGoal]);
+
   if (searchGoal) {
-    fetchGifsSearch(10).then(
+    fetchGifsSearch(0).then(
       function (result) {
         setData(result.data);
       }
     );
   }
   else {
-    fetchGifsTrending(10).then(
+    fetchGifsTrending(0).then(
       function (result) {
         setData(result.data);
       }
@@ -115,8 +122,8 @@ export default function Home() {
           </div>
         ) : ''}
       </Masonry>
-      <div className="loader"></div>
-      {searchGoal ? <Scroll limit={searchLimit} setLimit={setSearchLimit}></Scroll> : <Scroll limit={limit} setLimit={setLimit}></Scroll>}
+      {scrollLimit < 9 ? <div className="loader"></div> : <div className="footer">The end!</div>}
+      <Scroll scrollLimit={scrollLimit} setScrollLimit={setScrollLimit} limit={limit} setLimit={setLimit}></Scroll>
       <ScrollToTop onScroll={onScroll} setOnScroll={setOnScroll}></ScrollToTop>
     </main>
   );

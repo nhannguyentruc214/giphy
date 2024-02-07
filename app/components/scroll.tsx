@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 
-export default function Scroll({ limit, setLimit }: any) {
+export default function Scroll({ limit, setLimit, scrollLimit, setScrollLimit }: any) {
 
   useEffect(function mount() {
     function onScroll() {
-      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+      if (((window.innerHeight + window.scrollY) >= document.body.offsetHeight) && scrollLimit < 9) {
+        setScrollLimit(scrollLimit + 1);
         setLimit(limit + 15);
       }
     }
